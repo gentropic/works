@@ -9,11 +9,15 @@ here it's wrapped as a PWA and served via GitHub Pages.
 
 ```
 index.html            the built works-all.html + manifest link + SW registration
+auditable/index.html  the standalone notebook (auditable.html), at /works/auditable/
 manifest.webmanifest  PWA manifest (name, icon, standalone)
 sw.js                 service worker — precache the shell → full offline
 icon.svg              app icon
-publish.mjs           copy ../auditable/works-all.html → index.html (+ inject PWA bits)
+publish.mjs           copy ../auditable/{works-all,auditable}.html → here (+ inject PWA bits)
 ```
+
+Two apps publish here from the one auditable build: the **desktop** at
+`gentropic.org/works/` and the bare **notebook** at `gentropic.org/works/auditable/`.
 
 ## Publishing a new build
 

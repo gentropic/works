@@ -31,3 +31,16 @@ if (!/rel="manifest"/.test(html)) html = html.replace(/<\/head>/i, inject + '</h
 
 fs.writeFileSync(path.join(here, 'index.html'), html);
 console.log('published index.html (' + (html.length / 1048576).toFixed(1) + ' MB) from ' + path.relative(here, src));
+
+// Also publish the standalone notebook at /auditable/ → gentropic.org/works/auditable/.
+// The bare reactive notebook (no desktop shell), un-shelled from Works. Served
+// as-is; the Works SW (scope ./) runtime-caches it on visit.
+const nb = path.join(aud, 'auditable.html');
+if (fs.existsSync(nb)) {
+  fs.mkdirSync(path.join(here, 'auditable'), { recursive: true });
+  fs.copyFileSync(nb, path.join(here, 'auditable', 'index.html'));
+  const kb = (fs.statSync(nb).size / 1048576).toFixed(1);
+  console.log('published auditable/index.html (' + kb + ' MB) — the standalone notebook');
+} else {
+  console.warn('  (no auditable.html in ' + path.relative(here, aud) + ' — notebook not published)');
+}
