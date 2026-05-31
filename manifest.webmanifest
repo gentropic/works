@@ -1,0 +1,13 @@
+{
+  "name": "Auditable Works",
+  "short_name": "Works",
+  "description": "The GCU desktop — reactive notebooks, a book reader, a terminal, and more, in one self-contained page.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#15191c",
+  "theme_color": "#15191c",
+  "icons": [
+    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ]
+}
