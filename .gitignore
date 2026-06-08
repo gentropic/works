@@ -1,0 +1,7 @@
+# Build artifacts — assembled by CI (publish.yml) from auditable's release + the PWA
+# shell here. Not committed (would re-bloat this repo). The shell — manifest.webmanifest,
+# sw.js, icon.svg, .nojekyll, publish.mjs — IS the source and stays tracked.
+/index.html
+/auditable/
+/dl/
+/_site/

@@ -1,0 +1,52 @@
+name: Publish Works PWA
+
+on:
+  workflow_dispatch:      # fired by auditable's release (gh workflow run) + manual
+  push:
+    branches: [main]      # redeploy when the PWA shell (manifest/sw/icon) changes
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '20'
+
+      # Consume auditable's latest released build — never rebuild it here.
+      - name: Fetch latest auditable release (works-all + notebook)
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          mkdir -p dl
+          gh release download --repo gentropic/auditable --pattern 'works-all.html' --dir dl
+          gh release download --repo gentropic/auditable --pattern 'auditable.html' --dir dl
+
+      # publish.mjs injects manifest+sw into works-all → index.html, and copies the
+      # standalone notebook to auditable/index.html (served at /works/auditable/).
+      - name: Assemble the PWA
+        run: |
+          node publish.mjs ./dl
+          mkdir -p _site/auditable
+          cp index.html manifest.webmanifest sw.js icon.svg .nojekyll _site/
+          cp auditable/index.html _site/auditable/index.html
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+      - id: deploy
+        uses: actions/deploy-pages@v4
