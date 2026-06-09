@@ -1,8 +1,9 @@
-// Service worker for the Auditable Works PWA. The whole desktop is one
-// self-contained page (surfaces are embedded; books/extensions live in the
-// IndexedDB-backed workspace VFS, not fetched from the origin), so precaching
-// the shell = full offline. Cache-first; runtime-cache same-origin GETs.
-const CACHE = 'works-shell-v1';
+// Service worker for the Auditable Works PWA. The base (./ = the lean works-core
+// shell) is one self-contained page, so precaching it = the shell offline.
+// Provisioned packages live in the IndexedDB workspace VFS; the same-origin
+// catalog + .gcupkgs (./packages/*) and the /full monolith are runtime-cached on
+// visit, so a provisioned setup re-provisions offline. Cache-first.
+const CACHE = 'works-shell-v2';   // bumped: base is now lean works-core (was the monolith)
 const SHELL = ['./', './manifest.webmanifest', './icon.svg'];
 
 self.addEventListener('install', (e) => {

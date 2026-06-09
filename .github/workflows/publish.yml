@@ -27,22 +27,29 @@ jobs:
           node-version: '20'
 
       # Consume auditable's latest released build — never rebuild it here.
-      - name: Fetch latest auditable release (works-all + notebook)
+      # Consume auditable's latest released build — never rebuild it here.
+      # works-core = the lean PWA base; works-all = the /full monolith; packages.zip
+      # = the same-origin code-package catalog; auditable = the standalone notebook.
+      - name: Fetch latest auditable release
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           mkdir -p dl
+          gh release download --repo gentropic/auditable --pattern 'works-core.html' --dir dl
           gh release download --repo gentropic/auditable --pattern 'works-all.html' --dir dl
+          gh release download --repo gentropic/auditable --pattern 'packages.zip' --dir dl
           gh release download --repo gentropic/auditable --pattern 'auditable.html' --dir dl
+          unzip -qo dl/packages.zip -d dl/packages
 
-      # publish.mjs injects manifest+sw into works-all → index.html, and copies the
-      # standalone notebook to auditable/index.html (served at /works/auditable/).
+      # publish.mjs assembles: works-core → index.html (lean PWA, manifest+sw),
+      # works-all → full/, packages → packages/ (same-origin catalog), auditable →
+      # auditable/. Then stage the shell + all four into _site.
       - name: Assemble the PWA
         run: |
           node publish.mjs ./dl
-          mkdir -p _site/auditable
+          mkdir -p _site
           cp index.html manifest.webmanifest sw.js icon.svg .nojekyll _site/
-          cp auditable/index.html _site/auditable/index.html
+          cp -r auditable full packages _site/
 
       - uses: actions/upload-pages-artifact@v3
         with:
